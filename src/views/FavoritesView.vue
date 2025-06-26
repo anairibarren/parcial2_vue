@@ -19,11 +19,19 @@
       />
     </div>
   </div>
+
+  <Notification
+  v-if="notification.message"
+  :message="notification.message"
+  :type="notification.type"
+  />
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import MovieCard from '../components/MovieCard.vue'
+import Notification from '../components/Notification.vue'
+const notification = ref({ message: '', type: 'success' })
 
 const favorites = ref([])
 
@@ -38,7 +46,10 @@ const removeFromFavorites = (movieToRemove) => {
   localStorage.setItem('favorites', JSON.stringify(favorites.value))
 
   if (currentCount > 1) {
-    alert('Película eliminada con éxito!')
+    notification.value = {
+      message: 'Película eliminada con éxito',
+      type: 'success'
+    }
   }
 }
 

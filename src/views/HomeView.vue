@@ -10,36 +10,50 @@
       </div>
     </div>
 
-    <MovieList v-if="movies.length" :movies="movies" @show-detail="openDetail" 
-      @add-favorite="addToFavorites" />
+    <MovieList
+      v-if="movies.length"
+      :movies="movies"
+      @show-detail="openDetail"
+      @add-favorite="addToFavorites"
+    />
     <p v-else>No hay películas para mostrar.</p>
-    
-    <MovieDetail v-if="selectedMovie" :movie="selectedMovie" @close="selectedMovie = null" />
+
+    <MovieDetail
+      v-if="selectedMovie"
+      :movie="selectedMovie"
+      @close="selectedMovie = null"
+      @add-favorite="handleFavoriteNotification"
+    />
+
+    <Notification
+      v-if="notification.message"
+      :message="notification.message"
+      :type="notification.type"
+      @close="notification.message = ''"
+    />
   </div>
 </template>
-
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import MovieList from '../components/MovieList.vue'
 import SearchBar from '../components/SearchBar.vue'
 import Filter from '../components/Filter.vue'
-import MovieDetail from '../views/MovieDetail.vue' 
+import MovieDetail from '../views/MovieDetail.vue'
+import Notification from '../components/Notification.vue'
 
+const notification = ref({ message: '', type: 'success' })
 const movies = ref([])
 const selectedMovie = ref(null)
-
 const apiKey = process.env.VUE_APP_TMDB_API_KEY
 
 const fetchPopular = async () => {
-  const apiKey = process.env.VUE_APP_TMDB_API_KEY
   const res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=es-ES`)
   const data = await res.json()
   movies.value = data.results
 }
 
 const searchMovies = async (query) => {
-  const apiKey = process.env.VUE_APP_TMDB_API_KEY
   if (!query) {
     fetchPopular()
     return
@@ -50,18 +64,14 @@ const searchMovies = async (query) => {
 }
 
 const filterByGenre = async (genreId) => {
-  const apiKey = process.env.VUE_APP_TMDB_API_KEY
   let url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=es-ES`
-
   if (genreId) {
     url += `&with_genres=${genreId}`
   }
-
   const res = await fetch(url)
   const data = await res.json()
   movies.value = data.results
 }
-
 
 const openDetail = (movie) => {
   selectedMovie.value = movie
@@ -72,7 +82,22 @@ const addToFavorites = (movie) => {
   if (!stored.find(m => m.id === movie.id)) {
     stored.push(movie)
     localStorage.setItem('favorites', JSON.stringify(stored))
-    alert('Película agregada a favoritos!')
+    notification.value = {
+      message: 'Película agregada a favoritos',
+      type: 'success'
+    }
+  } else {
+    notification.value = {
+      message: 'Ya está en favoritos',
+      type: 'error'
+    }
+  }
+}
+
+const handleFavoriteNotification = (payload) => {
+  notification.value = {
+    message: payload.message,
+    type: payload.type
   }
 }
 

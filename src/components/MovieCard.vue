@@ -25,14 +25,9 @@ const props = defineProps({
   showOnlyFavorite: { type: Boolean, default: false }
 })
 
+const emit = defineEmits(['add-favorite'])
+
 const addToFavorites = () => {
-  const stored = JSON.parse(localStorage.getItem('favorites') || '[]')
-  if (!stored.find(m => m.id === props.movie.id)) {
-    stored.push(props.movie)
-    localStorage.setItem('favorites', JSON.stringify(stored))
-    alert('Película agregada a favoritos!')
-  } else {
-    alert('La película ya está en favoritos.')
-  }
+  emit('add-favorite', props.movie)
 }
 </script>
