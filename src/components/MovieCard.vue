@@ -1,20 +1,19 @@
 <template>
-  <div class="movie-card" :class="{ 'favorite-style': showOnlyFavorite }">
+  <div class="movie-card">
     <img :src="'https://image.tmdb.org/t/p/w500' + movie.poster_path" :alt="movie.title" />
 
-    <div v-if="!showOnlyFavorite">
+    <div>
       <h3>{{ movie.title }}</h3>
       <div class="buttons">
-        <router-link :to="`/movie/${movie.id}`">
-          <button class="details">Detalle</button>
-        </router-link>
-        <button class="favorites" @click="addToFavorites">Favoritos</button>
+        <template v-if="showOnlyFavorite">
+          <button class="favorites" @click="remove">Eliminar de favoritos</button>
+        </template>
+        <template v-else>
+          <router-link :to="`/movie/${movie.id}`" class="full-button-link">
+            <button class="details">Detalle</button>
+          </router-link>
+        </template>
       </div>
-    </div>
-
-    <div v-else class="favorite-content">
-      <h3>{{ movie.title }}</h3>
-      <button class="remove" @click="$emit('remove-favorite', movie)">Eliminar de favoritos</button>
     </div>
   </div>
 </template>
@@ -25,9 +24,9 @@ const props = defineProps({
   showOnlyFavorite: { type: Boolean, default: false }
 })
 
-const emit = defineEmits(['add-favorite'])
+const emit = defineEmits(['remove-favorite'])
 
-const addToFavorites = () => {
-  emit('add-favorite', props.movie)
+const remove = () => {
+  emit('remove-favorite', props.movie)
 }
 </script>

@@ -25,12 +25,16 @@
       @add-favorite="handleFavoriteNotification"
     />
 
+
+
+
     <Notification
       v-if="notification.message"
       :message="notification.message"
       :type="notification.type"
       @close="notification.message = ''"
     />
+
   </div>
 </template>
 
@@ -42,13 +46,24 @@ import Filter from '../components/Filter.vue'
 import MovieDetail from '../views/MovieDetail.vue'
 import Notification from '../components/Notification.vue'
 
-const notification = ref({ message: '', type: 'success' })
+
 const movies = ref([])
 const selectedMovie = ref(null)
 const apiKey = process.env.VUE_APP_TMDB_API_KEY
 
+
+const notification = ref({ message: '', type: 'success' })
+
+const handleFavoriteNotification = (payload) => {
+  notification.value = {
+    message: payload.message,
+    type: payload.type
+  }
+}
+
+
 const fetchPopular = async () => {
-  const res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=es-ES`)
+  const res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=9c9d0afa2300c644bc0efbf0f1e3701a&language=es-ES`)
   const data = await res.json()
   movies.value = data.results
 }
@@ -58,13 +73,13 @@ const searchMovies = async (query) => {
     fetchPopular()
     return
   }
-  const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&language=es-ES&query=${query}`)
+  const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=9c9d0afa2300c644bc0efbf0f1e3701a&language=es-ES&query=${query}`)
   const data = await res.json()
   movies.value = data.results
 }
 
 const filterByGenre = async (genreId) => {
-  let url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=es-ES`
+  let url = `https://api.themoviedb.org/3/discover/movie?api_key=9c9d0afa2300c644bc0efbf0f1e3701a&language=es-ES`
   if (genreId) {
     url += `&with_genres=${genreId}`
   }
@@ -91,13 +106,6 @@ const addToFavorites = (movie) => {
       message: 'Ya está en favoritos',
       type: 'error'
     }
-  }
-}
-
-const handleFavoriteNotification = (payload) => {
-  notification.value = {
-    message: payload.message,
-    type: payload.type
   }
 }
 

@@ -8,8 +8,8 @@
       <p>{{ movie.overview }}</p>
 
       <div class="buttons">
-        <button 
-          v-if="!isFavorite.value" 
+        <button
+          v-if="!isFavorite"
           @click="addToFavorites"
           class="btn-favorite"
         >
@@ -28,12 +28,10 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-// Emitimos notificación hacia el padre (HomeView)
 const emit = defineEmits(['add-favorite'])
-
 const route = useRoute()
 const movie = ref({})
 const isFavorite = ref(false)
@@ -53,10 +51,16 @@ const addToFavorites = () => {
   if (!stored.find(m => m.id === movie.value.id)) {
     stored.push(movie.value)
     localStorage.setItem('favorites', JSON.stringify(stored))
-    isFavorite.value = true // ← cambiamos estado para ocultar botón
-    emit('add-favorite', { message: 'Película agregada a favoritos', type: 'success' })
+    isFavorite.value = true
+    emit('add-favorite', {
+      message: 'Película agregada a favoritos',
+      type: 'success'
+    })
   } else {
-    emit('add-favorite', { message: 'Ya está en favoritos', type: 'error' })
+    emit('add-favorite', {
+      message: 'Ya está en favoritos',
+      type: 'error'
+    })
   }
 }
 </script>

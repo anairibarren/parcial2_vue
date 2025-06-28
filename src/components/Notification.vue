@@ -1,32 +1,48 @@
 <template>
-  <div v-if="visible" class="notification" :class="type">
-    {{ message }}
-  </div>
+  <transition name="fade">
+    <div v-if="visible" :class="['notification', type]">
+      {{ message }}
+    </div>
+  </transition>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
-  message: String,
+  message: {
+    type: String,
+    default: ''
+  },
   type: {
     type: String,
-    default: 'success'
+    default: '' 
   },
   duration: {
     type: Number,
-    default: 3000
+    default: 2000 
   }
 })
 
 const visible = ref(false)
+let timer
 
-watch(() => props.message, (newMessage) => {
-  if (newMessage) {
-    visible.value = true
-    setTimeout(() => {
-      visible.value = false
-    }, props.duration)
-  }
-}, { immediate: true })
+watch(
+  () => props.message,
+  (newMessage) => {
+    if (newMessage) {
+      visible.value = true
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        visible.value = false
+      }, props.duration)
+    }
+  },
+  { immediate: true } 
+)
+
+onUnmounted(() => {
+  clearTimeout(timer)
+})
 </script>
+
