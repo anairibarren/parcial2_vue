@@ -17,7 +17,3 @@ Tecnologías
 - HTML5 / CSS3
 - TheMovieDB API
 
-Instalación local
-- bash
-- npm install
-- npm run dev
